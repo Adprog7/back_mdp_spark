@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvenementController;
 
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user();
+    $user->load('organisateur');
+    return response()->json($user);
 })->middleware('auth:sanctum');
 
 Route::get('/test', function () {
@@ -17,6 +19,7 @@ use App\Http\Controllers\AuthController;
 
 // Authentification
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Routes protégées par l'authentification
 Route::middleware('auth:sanctum')->group(function () {
