@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -28,5 +29,23 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // ─── Relations amis ───────────────────────────────────────────────
+
+    /**
+     * Demandes d'amitié envoyées par cet utilisateur.
+     */
+    public function demandesEnvoyees(): HasMany
+    {
+        return $this->hasMany(Ami::class, 'id_demandeur');
+    }
+
+    /**
+     * Demandes d'amitié reçues par cet utilisateur.
+     */
+    public function demandesRecues(): HasMany
+    {
+        return $this->hasMany(Ami::class, 'id_destinataire');
     }
 }
