@@ -19,8 +19,6 @@ return new class extends Migration
                 $table->text('contenu');
                 $table->timestamp('date_envoi')->useCurrent();
 
-                $table->primary('id_message_groupe');
-
                 $table->foreign('id_groupe')->references('id_groupe')->on('groupe')->onDelete('cascade');
                 $table->foreign('id_utilisateur_expediteur')->references('id_utilisateur')->on('utilisateur')->onDelete('cascade');
             });

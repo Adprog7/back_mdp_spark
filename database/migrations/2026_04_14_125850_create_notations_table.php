@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('notations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('notation')) {
+            Schema::create('notation', function (Blueprint $table) {
+                $table->integer('id_notation')->autoIncrement();
+                $table->string('categorie', 100)->nullable();
+                $table->integer('niveau_sonore')->nullable();
+                $table->integer('qualite_air')->nullable();
+                $table->integer('confort')->nullable();
+                $table->integer('id_evenement');
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('notations');
+        Schema::dropIfExists('notation');
     }
 };

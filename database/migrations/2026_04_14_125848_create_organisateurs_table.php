@@ -6,22 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('organisateurs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('organisateur')) {
+            Schema::create('organisateur', function (Blueprint $table) {
+                $table->integer('id_organisateur')->autoIncrement();
+                $table->string('nom_structure', 150);
+                $table->string('type_structure', 100)->nullable();
+                $table->text('description')->nullable();
+                $table->integer('id_utilisateur')->nullable();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('organisateurs');
+        Schema::dropIfExists('organisateur');
     }
 };

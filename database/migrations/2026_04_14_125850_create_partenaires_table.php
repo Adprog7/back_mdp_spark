@@ -6,22 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('partenaires', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('partenaire')) {
+            Schema::create('partenaire', function (Blueprint $table) {
+                $table->integer('id_partenaire')->autoIncrement();
+                $table->string('nom', 150);
+                $table->string('secteur', 100)->nullable();
+                $table->text('description')->nullable();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('partenaires');
+        Schema::dropIfExists('partenaire');
     }
 };

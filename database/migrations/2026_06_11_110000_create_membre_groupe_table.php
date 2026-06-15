@@ -18,8 +18,6 @@ return new class extends Migration
                 $table->integer('id_utilisateur');
                 $table->timestamp('date_rejoint')->useCurrent();
 
-                $table->primary('id_membre_groupe');
-
                 $table->foreign('id_groupe')->references('id_groupe')->on('groupe')->onDelete('cascade');
                 $table->foreign('id_utilisateur')->references('id_utilisateur')->on('utilisateur')->onDelete('cascade');
             });

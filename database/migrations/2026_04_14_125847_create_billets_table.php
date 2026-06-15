@@ -6,22 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('billets', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('billet')) {
+            Schema::create('billet', function (Blueprint $table) {
+                $table->integer('id_billet')->autoIncrement();
+                $table->decimal('prix', 10, 2);
+                $table->dateTime('date_achat')->nullable();
+                $table->string('statut', 50)->nullable();
+                $table->integer('id_utilisateur');
+                $table->integer('id_evenement');
+                $table->integer('id_groupe')->nullable();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('billets');
+        Schema::dropIfExists('billet');
     }
 };
