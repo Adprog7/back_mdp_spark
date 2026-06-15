@@ -5,12 +5,16 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
+    libintl-perl \
+    libicu-dev \
     zip \
     unzip \
     git \
     curl
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # 2. Activation du module de réécriture d'Apache (indispensable pour les routes Laravel)
 RUN a2enmod rewrite
@@ -25,7 +29,7 @@ COPY . /var/www/html
 
 # 5. Installation de Composer et des dépendances PHP
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-platform-reqs
 
 # 6. Configuration des permissions pour Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
