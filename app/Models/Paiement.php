@@ -15,11 +15,23 @@ class Paiement extends Model
         'moyen_paiement',
         'statut',
         'id_billet',
+        'id_utilisateur_payeur',
+        'id_groupe',
     ];
 
     // Relations
     public function billet()
     {
         return $this->belongsTo(Billet::class, 'id_billet', 'id_billet');
+    }
+
+    public function payeur()
+    {
+        return $this->belongsTo(Utilisateur::class, 'id_utilisateur_payeur', 'id_utilisateur');
+    }
+
+    public function groupe()
+    {
+        return $this->belongsTo(Groupe::class, 'id_groupe', 'id_groupe');
     }
 }

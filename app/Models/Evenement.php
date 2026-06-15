@@ -20,6 +20,7 @@ class Evenement extends Model
         'statut',
         'empreinte_carbonne',
         'id_organisateur',
+        'affiche',
     ];
 
     // Relations

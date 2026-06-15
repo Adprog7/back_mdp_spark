@@ -6,22 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('groupes', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('groupe')) {
+            Schema::create('groupe', function (Blueprint $table) {
+                $table->integer('id_groupe')->autoIncrement();
+                $table->string('nom', 100);
+                $table->string('code_invitation', 50)->nullable();
+                $table->integer('id_utilisateur_createur');
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('groupes');
+        Schema::dropIfExists('groupe');
     }
 };

@@ -15,6 +15,7 @@ class Billet extends Model
         'statut',
         'id_utilisateur',
         'id_evenement',
+        'id_groupe',
     ];
 
     // Relations
@@ -31,5 +32,10 @@ class Billet extends Model
     public function paiement()
     {
         return $this->hasOne(Paiement::class, 'id_billet', 'id_billet');
+    }
+
+    public function groupe()
+    {
+        return $this->belongsTo(Groupe::class, 'id_groupe', 'id_groupe');
     }
 }
