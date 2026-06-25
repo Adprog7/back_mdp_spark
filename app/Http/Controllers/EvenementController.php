@@ -10,19 +10,18 @@ class EvenementController extends Controller
 {
     public function index()
     {
-        return response()->json(Evenement::orderBy('date_debut')->get());
+        return response()->json(Evenement::orderBy('created_at', 'desc')->get());
     }
 
     public function show($id)
     {
-        // On force le chargement de la relation 'organisateur'
-        $evenement = Evenement::with('organisateur')->find($id);
-
-        if (!$evenement) {
-            return response()->json(['message' => 'Événement non trouvé'], 404);
+        $event = Evenement::with('organisateur')->find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Non trouvé'], 404);
         }
-
-        return response()->json($evenement);
+        
+        return response()->json($event);
     }
 
     // AJOUTE CETTE MÉTHODE POUR LA PUBLICATION
@@ -56,7 +55,7 @@ class EvenementController extends Controller
                 'prix' => $request->prix,
                 'capacite' => $request->capacite,
                 'photo' => $photoPath,
-                'organisateur_id' => $request->user()->id_utilisateur, // Utilise l'ID de l'utilisateur connecté
+                'organisateur_id' => $organisateur->id,
                 'statut' => 'actif',
             ]);
 

@@ -42,50 +42,53 @@ class OrganizerController extends Controller
 
     public function getEvents(Request $request)
     {
-        return Evenement::where('organisateur_id', $request->user()->id_utilisateur)
-            ->get()
+        // 1. Trouver l'ID de l'organisateur lié au user connecté
+        $organisateur = \App\Models\Organisateur::where('id_utilisateur', $request->user()->id_utilisateur)->first();
+        
+        if (!$organisateur) return [];
+
+        // 2. Utiliser l'ID de l'organisateur pour filtrer les événements
+        return Evenement::where('organisateur_id', $organisateur->id)->get()
             ->map(function ($event) {
                 return [
                     'id' => $event->id,
-                    'title' => $event->titre,        // CORRIGÉ : utilise 'titre'
-                    'date' => $event->date_debut,    // CORRIGÉ : utilise 'date_debut'
+                    'title' => $event->titre,
+                    'date' => $event->date_debut,
                     'lieu' => $event->lieu,
                     'status' => 'En ligne',
                     'statusColor' => 'bg-green-100 text-green-600',
-                    'vendus' => 0,                   // À calculer dynamiquement plus tard
+                    'vendus' => 0,
                     'taux' => '0 %',
                     'revenus' => '0 €',
-                    'image' => $event->photo         // CORRIGÉ : utilise 'photo'
+                    'image' => $event->photo
                 ];
             });
     }
 
     public function getStats(Request $request)
-{
-    $userId = $request->user()->id_utilisateur;
+    {
+        // 1. Trouver l'ID de l'organisateur
+        $organisateur = \App\Models\Organisateur::where('id_utilisateur', $request->user()->id_utilisateur)->first();
+        if (!$organisateur) return [];
 
-    // 1. Compter les évènements de l'organisateur
-    $nbEvenements = Evenement::where('organisateur_id', $userId)->count();
+        // 2. Utiliser l'ID de l'organisateur pour filtrer
+        $nbEvenements = Evenement::where('organisateur_id', $organisateur->id)->count();
+        $evenementIds = Evenement::where('organisateur_id', $organisateur->id)->pluck('id');
 
-    // 2. Récupérer les IDs des événements de cet organisateur
-    $evenementIds = Evenement::where('organisateur_id', $userId)->pluck('id');
+        $statsBillets = \Illuminate\Support\Facades\DB::table('billets')
+            ->whereIn('id_evenement', $evenementIds)
+            ->selectRaw('count(*) as total_billets, sum(prix) as total_revenus')
+            ->first();
 
-    // 3. Calculer les totaux via la table 'billets'
-    // On utilise DB::table car tu n'as peut-être pas encore le modèle Billet.php
-    $statsBillets = \Illuminate\Support\Facades\DB::table('billets')
-        ->whereIn('id_evenement', $evenementIds) // Correction ici : id_evenement
-        ->selectRaw('count(*) as total_billets, sum(prix) as total_revenus')
-        ->first();
+        $nbBillets = $statsBillets->total_billets ?? 0;
+        $totalRevenus = $statsBillets->total_revenus ?? 0;
 
-    $nbBillets = $statsBillets->total_billets ?? 0;
-    $totalRevenus = $statsBillets->total_revenus ?? 0;
-
-    return [
-        ['label' => "Évènements", 'value' => (string)$nbEvenements, 'icon' => "✦"],
-        ['label' => "Billets vendus", 'value' => (string)$nbBillets, 'icon' => "◇"],
-        ['label' => "Revenus", 'value' => number_format($totalRevenus, 0, ',', ' ') . ' €', 'icon' => "€"],
-        ['label' => "Note moyenne", 'value' => "4.8/5", 'icon' => "☆"],
-    ];
-}
+        return [
+            ['label' => "Évènements", 'value' => (string)$nbEvenements, 'icon' => "✦"],
+            ['label' => "Billets vendus", 'value' => (string)$nbBillets, 'icon' => "◇"],
+            ['label' => "Revenus", 'value' => number_format($totalRevenus, 0, ',', ' ') . ' €', 'icon' => "€"],
+            ['label' => "Note moyenne", 'value' => "4.8/5", 'icon' => "☆"],
+        ];
+    }
     
 }

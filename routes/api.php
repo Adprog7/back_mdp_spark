@@ -8,7 +8,10 @@ use App\Http\Controllers\EvenementController;
 use App\Http\Controllers\GroupeController;
 use App\Http\Controllers\BilletController; 
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\OrganizerController; // AJOUTE CETTE LIGNE
+use App\Http\Controllers\OrganizerController; 
+
+// Assure-toi que cette ligne existe
+Route::get('/evenements/recents', [EvenementController::class, 'getRecents']);
 /*
 |--------------------------------------------------------------------------
 | Routes Publiques (Sans authentification)
