@@ -6,9 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Organisateur extends Model
 {
-    protected $table = 'organisateur';
-    protected $primaryKey = 'id_organisateur';
-    public $timestamps = false;
+    protected $table = 'organisateurs';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'nom_structure',
@@ -20,11 +19,11 @@ class Organisateur extends Model
     // Relations
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'id_utilisateur', 'id_utilisateur');
+        return $this->belongsTo(User::class, 'id_utilisateur');
     }
 
     public function evenements()
     {
-        return $this->hasMany(Evenement::class, 'id_organisateur', 'id_organisateur');
+        return $this->hasMany(Evenement::class, 'organisateur_id');
     }
 }

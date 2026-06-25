@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Evenement extends Model
 {
-    protected $table = 'evenement';
-    protected $primaryKey = 'id_evenement';
-    public $timestamps = false;
+    protected $table = 'evenements';
 
     protected $fillable = [
         'titre',
@@ -16,30 +14,33 @@ class Evenement extends Model
         'date_debut',
         'date_fin',
         'lieu',
+        'prix',
         'capacite',
         'statut',
-        'empreinte_carbonne',
-        'id_organisateur',
+        'empreinte_carbone',
+        'organisateur_id',
+        'photo',
     ];
 
     // Relations
     public function organisateur()
     {
-        return $this->belongsTo(Organisateur::class, 'id_organisateur', 'id_organisateur');
+        // On lie organisateur_id (table evenements) vers id (table organisateurs)
+        return $this->belongsTo(\App\Models\Organisateur::class, 'organisateur_id', 'id');
     }
 
     public function billets()
     {
-        return $this->hasMany(Billet::class, 'id_evenement', 'id_evenement');
+        return $this->hasMany(Billet::class, 'id_evenement', 'id');
     }
 
     public function sponsorisations()
     {
-        return $this->hasMany(Sponsorisation::class, 'id_evenement', 'id_evenement');
+        return $this->hasMany(Sponsorisation::class, 'id_evenement', 'id');
     }
 
     public function notations()
     {
-        return $this->hasMany(Notation::class, 'id_evenement', 'id_evenement');
+        return $this->hasMany(Notation::class, 'id_evenement', 'id');
     }
 }

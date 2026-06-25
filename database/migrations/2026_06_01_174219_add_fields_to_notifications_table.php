@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('notifications', function (Blueprint $table) {
+
+            $table->string('type')->nullable();
+            $table->text('contenu')->nullable();
+            $table->timestamp('date_envoie')->nullable();
+
+            $table->foreignId('id_utilisateur')
+                ->constrained('users')
+                ->onDelete('cascade');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('notifications', function (Blueprint $table) {
+
+            $table->dropForeign(['id_utilisateur']);
+
+            $table->dropColumn([
+                'type',
+                'contenu',
+                'date_envoie',
+                'id_utilisateur'
+            ]);
+        });
+    }
+};

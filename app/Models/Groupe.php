@@ -6,19 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Groupe extends Model
 {
-    protected $table = 'groupe';
+    protected $table = 'groupe'; // Ton dump SQL indique 'groupe'
     protected $primaryKey = 'id_groupe';
     public $timestamps = false;
 
-    protected $fillable = [
-        'nom',
-        'code_invitation',
-        'id_utilisateur_createur',
-    ];
+    protected $fillable = ['nom', 'code_invitation', 'id_utilisateur_createur'];
 
-    // Relations
-    public function utilisateur()
+    // Ajoute cette relation pour récupérer les membres
+    // Dans App\Models\Groupe.php
+    public function membres()
     {
-        return $this->belongsTo(Utilisateur::class, 'id_utilisateur_createur', 'id_utilisateur');
+        // On lie le groupe aux utilisateurs via la table membres_groupe
+        return $this->belongsToMany(
+            User::class,            // Le modèle cible
+            'membres_groupe',       // La table pivot
+            'id_groupe',            // Clé étrangère dans la pivot pointant vers Groupe
+            'id_utilisateur'        // Clé étrangère dans la pivot pointant vers User
+        );
     }
 }
