@@ -20,9 +20,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_evenement');
             $table->timestamps();
 
-            // S'il existe des clés étrangères, décommentez ceci et adaptez au besoin :
-            // $table->foreign('id_utilisateur')->references('id_utilisateur')->on('utilisateur')->onDelete('cascade');
-            // $table->foreign('id_evenement')->references('id_evenement')->on('evenements')->onDelete('cascade');
         });
     }
 

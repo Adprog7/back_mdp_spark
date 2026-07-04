@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Billets
     Route::get('/my-tickets', [BilletController::class, 'index']);
     Route::post('/billets', [BilletController::class, 'store']);
+    Route::get('/billets/{id}', [BilletController::class, 'show']);
 
     // api.php
     Route::get('/messages/{id_groupe}', [MessageController::class, 'index']);

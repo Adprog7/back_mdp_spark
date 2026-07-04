@@ -59,13 +59,12 @@ class AuthController extends Controller
         ]);
 
         $result = DB::transaction(function () use ($request) {
-            // 1. Création de l'utilisateur avec tes noms de colonnes réels
             $user = User::create([
                 'prenom' => $request->prenom,
                 'nom' => $request->nom, 
                 'email' => $request->email,
-                'mot_de_passe' => Hash::make($request->password), // Utilise le nom de ta colonne
-                'date_inscription' => now(), // Important : Laravel ne le fait pas seul si tes timestamps sont à false
+                'mot_de_passe' => Hash::make($request->password), 
+                'date_inscription' => now(), 
                 'langue' => 'fr',
             ]);
 

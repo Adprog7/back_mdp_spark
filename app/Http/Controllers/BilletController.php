@@ -53,4 +53,31 @@ class BilletController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function show(Request $request, $id)
+    {
+        $userId = $request->user()->id_utilisateur;
+
+        $billet = DB::table('billets')
+            ->join('evenements', 'billets.id_evenement', '=', 'evenements.id')
+            ->select(
+                'billets.id_billet', 
+                'billets.prix', 
+                'billets.date_achat', 
+                'billets.statut', 
+                'evenements.titre', 
+                'evenements.photo', 
+                'evenements.lieu',
+                'evenements.date_debut'
+            )
+            ->where('billets.id_billet', $id)
+            ->where('billets.id_utilisateur', $userId) // Sécurité
+            ->first();
+
+        if (!$billet) {
+            return response()->json(['message' => 'Billet introuvable'], 404);
+        }
+
+        return response()->json($billet);
+    }
 }
