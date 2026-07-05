@@ -42,9 +42,9 @@ class EvenementController extends Controller
         }
 
         // L'utilisateur connecté doit avoir un compte organisateur associé
-        $validated['id_organisateur'] = $request->user()->organisateur->id_organisateur;
+        $validated['organisateur_id'] = $request->user()->organisateur->id_organisateur;
         $validated['statut'] = 'En cours';
-        $validated['empreinte_carbonne'] = 0;
+        $validated['empreinte_carbone'] = 0;
 
         $event = Evenement::create($validated);
 
@@ -56,7 +56,7 @@ class EvenementController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $event = Evenement::where('id_evenement', $id)->firstOrFail();
+        $event = Evenement::where('id', $id)->firstOrFail();
 
         return response()->json($this->format($event));
     }
@@ -72,7 +72,7 @@ class EvenementController extends Controller
         $dateDebut = Carbon::parse($event->date_debut);
 
         return [
-            'id'          => $event->id_evenement,
+            'id'          => $event->id,
             'title'       => $event->titre,
             'description' => $event->description,
             'city'        => $event->lieu,
@@ -82,8 +82,8 @@ class EvenementController extends Controller
             'statut'      => $event->statut,
             // Champs non présents dans la BDD – laissés vides pour l'instant
             'theme'       => null,
-            'image'       => $event->affiche ? url('storage/' . $event->affiche) : null,
-            'price'       => null,
+            'image'       => $event->photo ? url('storage/' . $event->photo) : null,
+            'price'       => $event->prix,
             'countryFlag' => '🇫🇷',
         ];
     }
