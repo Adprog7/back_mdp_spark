@@ -1,36 +1,23 @@
-FROM php:8.2-apache
+# 1. Utiliser une image complète et pré-configurée pour le web et Laravel
+FROM webdevops/php-apache:8.3
 
-# 1. Installation des dépendances système et extensions PHP requises par Laravel
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    libintl-perl \
-    libicu-dev \
-    zip \
-    unzip \
-    git \
-    curl
+# 2. Configurer Apache pour pointer sur le dossier /public de Laravel
+ENV WEB_DOCUMENT_ROOT=/var/www/html/public
 
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
+# 3. Définir le répertoire de travail
+WORKDIR /var/www/html
 
-# 2. Activation du module de réécriture d'Apache (indispensable pour les routes Laravel)
-RUN a2enmod rewrite
+# 4. Copier les fichiers du projet
+COPY . .
 
-# 3. Modification de la racine d'Apache pour pointer vers le dossier /public de Laravel
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# 5. Installer les dépendances PHP via Composer
+RUN composer install --no-dev --optimize-autoloader
 
-# 4. Copie du code du projet dans le conteneur
-COPY . /var/www/html
+# 6. Donner les droits d'accès indispensables pour Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 5. Installation de Composer et des dépendances PHP
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-platform-reqs
-
+# L'image écoute nativement sur le port 80
+EXPOSE 80
 # 6. Configuration des permissions pour Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
