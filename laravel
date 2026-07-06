@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# Modifier la racine de Nginx pour pointer vers /public
-sed -i 's|root /home/site/wwwroot;|root /home/site/wwwroot/public;|g' /etc/nginx/sites-available/default
-
-# Redémarrer proprement le service Nginx sur Azure
-service nginx reload
