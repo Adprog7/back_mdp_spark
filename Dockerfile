@@ -1,4 +1,4 @@
-# 1. Utiliser une image Apache + PHP 8.4 taillée pour la production et Laravel
+# 1. Utiliser l'image Apache + PHP 8.4 taillée pour la production et Laravel
 FROM webdevops/php-apache:8.4
 
 # 2. Configurer Apache pour pointer sur le dossier /public de Laravel
@@ -10,10 +10,10 @@ WORKDIR /var/www/html
 # 4. Copier tout le code du projet
 COPY . .
 
-# 5. Installer les dépendances en ignorant les scripts post-dump qui plantent
+# 5. Installer les dépendances PHP via Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs --no-scripts
 
-# 6. Donner les droits d'accès indispensables pour Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 6. Donner les droits d'accès indispensables à l'utilisateur de l'image (application)
+RUN chown -R application:application /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
