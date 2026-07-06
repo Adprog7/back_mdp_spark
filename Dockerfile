@@ -10,15 +10,11 @@ WORKDIR /var/www/html
 # 4. Copier les fichiers du projet
 COPY . .
 
-# 5. Installer les dépendances PHP via Composer
-RUN composer install --no-dev --optimize-autoloader
+# 5. Installer les dépendances en ignorant les restrictions strictes de plateforme
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # 6. Donner les droits d'accès indispensables pour Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # L'image écoute nativement sur le port 80
-EXPOSE 80
-# 6. Configuration des permissions pour Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
 EXPOSE 80
