@@ -1,19 +1,33 @@
-# 1. Utiliser l'image Apache + PHP 8.4 taillée pour la production et Laravel
-FROM webdevops/php-apache:8.4
+# 1. Image PHP 8.4 officielle avec Apache (pas de séparation FPM/Port 9000)
+FROM php:8.4-apache
 
-# 2. Configurer Apache pour pointer sur le dossier /public de Laravel
-ENV WEB_DOCUMENT_ROOT=/var/www/html/public
+# 2. Installer les outils système essentiels
+RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    git \
+    curl \
+    && docker-php-ext-install pdo pdo_mysql \
+    && a2enmod rewrite
 
-# 3. Définir le répertoire de travail
+# 3. Configurer Apache pour pointer sur le dossier /public de Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# 4. Récupérer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 5. Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# 4. Copier tout le code du projet
+# 6. Copier tout le projet
 COPY . .
 
-# 5. Installer les dépendances PHP via Composer
+# 7. Installer les dépendances sans bloquer sur les scripts
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs --no-scripts
 
-# 6. Donner les droits d'accès indispensables à l'utilisateur de l'image (application)
-RUN chown -R application:application /var/www/html/storage /var/www/html/bootstrap/cache
+# 8. Droits d'accès standard pour l'image officielle (www-data)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
