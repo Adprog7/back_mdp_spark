@@ -10,8 +10,8 @@ WORKDIR /var/www/html
 # 4. Copier tout le code du projet
 COPY . .
 
-# 5. Installer les dépendances PHP via Composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+# 5. Installer les dépendances en ignorant les scripts post-dump qui plantent
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs --no-scripts
 
 # 6. Donner les droits d'accès indispensables pour Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
