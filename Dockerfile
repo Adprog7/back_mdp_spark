@@ -1,13 +1,15 @@
-# 1. Utiliser l'image PHP 8.4 officielle avec Apache préinstallé
+# 1. Image PHP 8.4 officielle avec Apache
 FROM php:8.4-apache
 
-# 2. Installer les outils système et les extensions requises
+# 2. Installer les dépendances système et TOUTES les extensions PHP nécessaires à Laravel
 RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo pdo_mysql \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring xml bcmath \
     && a2enmod rewrite
 
 # 3. Configurer Apache pour pointer sur le dossier /public de Laravel
@@ -21,13 +23,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 5. Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# 6. Copier tout le code du projet
+# 6. Copier le projet
 COPY . .
 
-# 7. Lancer le composer install avec les flags de force (syntaxe Docker officielle)
+# 7. Installer les dépendances
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# 8. Donner les droits sur les dossiers de cache de Laravel
+# 8. Droits d'accès cruciaux pour Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
