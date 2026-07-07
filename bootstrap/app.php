@@ -13,13 +13,25 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(prepend: [
-        \Illuminate\Http\Middleware\HandleCors::class,
-    ]);
+            \Illuminate\Http\Middleware\HandleCors::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-    $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
-        if ($request->is('api/*')) {
-            return response()->json(['message' => 'Non authentifié.'], 401);
-        }
-    });
+        // 1. Ton ancienne gestion pour l'authentification
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json(['message' => 'Non authentifié.'], 401);
+            }
+        });
+
+        // 2. Le filet de sécurité universel : intercepte TOUTES les erreurs et force le JSON
+        $exceptions->render(function (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+        });
     })->create();
