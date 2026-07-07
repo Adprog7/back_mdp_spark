@@ -17,16 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // 1. Ton ancienne gestion pour l'authentification
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
             if ($request->is('api/*')) {
-                return response()->json(['message' => 'Non authentifié.'], 401);
+                return new \Symfony\Component\HttpFoundation\JsonResponse(['message' => 'Non authentifié.'], 401);
             }
         });
 
-        // 2. Le filet de sécurité universel : intercepte TOUTES les erreurs et force le JSON
         $exceptions->render(function (\Throwable $e) {
-            return response()->json([
+            return new \Symfony\Component\HttpFoundation\JsonResponse([
                 'error' => true,
                 'message' => $e->getMessage(),
                 'exception' => get_class($e),
